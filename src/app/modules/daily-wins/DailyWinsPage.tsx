@@ -1,26 +1,72 @@
-import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, TrendingUp, Flame, Star } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, TrendingUp, Flame, Star, Loader2 } from 'lucide-react';
 import PAAppLayout from '../../components/PAAppLayout';
 import PACard from '../../components/ui/PACard';
+import { getDailyWinsPeople, getDailyNote, saveDailyNote, DailyWinsPerson } from '../../../services/dailyWins';
+
+const TODAY = new Date();
+
+function toApiDate(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function getInitials(name: string): string {
+  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+}
 
 interface FormData {
   accomplishments: string;
   learning: string;
   tomorrowPlan: string;
 }
-
 export default function DailyWinsPage() {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date(2026, 1, 26));
+  const [selectedDate, setSelectedDate] = useState<Date>(TODAY);
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
     accomplishments: '',
     learning: '',
     tomorrowPlan: ''
   });
+  // Real data state
+  const [selfProfile, setSelfProfile] = useState<DailyWinsPerson | null>(null);
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  // ---------------------------------------------------------------
+  // Fetch user profile on mount
+  // Flow: GET /api/daily-wins/people → Vite proxy → port 3010
+  //   → backend reads cookie → Supabase → returns self + supervisees
+  // ---------------------------------------------------------------
+  useEffect(() => {
+    getDailyWinsPeople().then(({ self }) => {
+      setSelfProfile(self);
+      setIsProfileLoading(false);
+    });
+  }, []);
+
+  // ---------------------------------------------------------------
+  // Load note whenever date changes
+  // Flow: GET /api/daily-wins/notes?date=YYYY-MM-DD → port 3010
+  // ---------------------------------------------------------------
+  useEffect(() => {
+    const apiDate = toApiDate(selectedDate);
+    getDailyNote(apiDate).then((note) => {
+      if (note) {
+        setFormData({
+          accomplishments: note.wins || '',
+          learning: note.learnings || '',
+          tomorrowPlan: '',
+        });
+      } else {
+        setFormData({ accomplishments: '', learning: '', tomorrowPlan: '' });
+      }
+    });
+  }, [selectedDate]);
 
   const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                      'July', 'August', 'September', 'October', 'November', 'December'];
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'];
 
   const getDaysInMonth = (date: Date): (number | null)[] => {
     const year = date.getFullYear();
@@ -29,7 +75,7 @@ export default function DailyWinsPage() {
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-    
+
     const days: (number | null)[] = [];
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(null);
@@ -68,13 +114,29 @@ export default function DailyWinsPage() {
     setShowCalendar(false);
   };
 
-  const handleSubmit = () => {
-    console.log('Submitting daily wins:', formData);
+  // ---------------------------------------------------------------
+  // Save note to backend
+  // Flow: POST /api/daily-wins/notes → Vite proxy → port 3010
+  //   → backend saves to Supabase DB
+  // ---------------------------------------------------------------
+  const handleSubmit = async () => {
+    if (!selfProfile) return;
+    setIsSaving(true);
+    setSaveStatus('idle');
+    const success = await saveDailyNote({
+      employee_id: selfProfile.id,
+      date: toApiDate(selectedDate),
+      wins: formData.accomplishments,
+      learnings: formData.learning,
+    });
+    setIsSaving(false);
+    setSaveStatus(success ? 'success' : 'error');
+    setTimeout(() => setSaveStatus('idle'), 3000);
   };
 
   const dateDisplay = formatDate(selectedDate);
   const calendarDays = getDaysInMonth(selectedDate);
-  const isToday = selectedDate.toDateString() === new Date(2026, 1, 26).toDateString();
+  const isToday = selectedDate.toDateString() === TODAY.toDateString();
 
   return (
     <PAAppLayout activePage="daily-wins">
@@ -100,7 +162,7 @@ export default function DailyWinsPage() {
                   </div>
                 </div>
               </PACard>
-              
+
               <PACard className="p-5 hover:shadow-md transition-all duration-200 cursor-pointer group">
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-[#1976D2] to-[#1565C0] flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-200">
@@ -128,21 +190,30 @@ export default function DailyWinsPage() {
 
             {/* User Info & Weekly Progress */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* User Card */}
+              {/* User Card — real profile from backend */}
               <PACard className="p-6 bg-gradient-to-br from-blue-50 to-white border-[#E5E7EB]">
                 <h3 className="text-base font-semibold text-[#111827] mb-4">Your Profile</h3>
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-[#1976D2] to-[#1565C0] flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <span className="text-white font-bold text-xl">SK</span>
+                {isProfileLoading ? (
+                  <div className="flex items-center gap-3">
+                    <Loader2 className="w-6 h-6 animate-spin text-[#1976D2]" />
+                    <span className="text-sm text-[#6B7280]">Loading...</span>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-[#111827] text-lg mb-1">Shaurya Katna</h3>
-                    <p className="text-sm text-[#6B7280] mb-2">Programming Team</p>
-                    <span className="inline-block text-xs font-mono text-[#6B7280] bg-white px-3 py-1.5 rounded-lg border border-[#E5E7EB] shadow-sm">
-                      #SK2026
-                    </span>
+                ) : selfProfile ? (
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-[#1976D2] to-[#1565C0] flex items-center justify-center flex-shrink-0 shadow-lg">
+                      <span className="text-white font-bold text-xl">{getInitials(selfProfile.name)}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-[#111827] text-lg mb-1">{selfProfile.name}</h3>
+                      <p className="text-sm text-[#6B7280] mb-2">{selfProfile.role_title || selfProfile.department || 'Team Member'}</p>
+                      <span className="inline-block text-xs font-mono text-[#6B7280] bg-white px-3 py-1.5 rounded-lg border border-[#E5E7EB] shadow-sm">
+                        {selfProfile.email}
+                      </span>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <p className="text-sm text-[#6B7280]">Profile unavailable. Please sign in.</p>
+                )}
               </PACard>
 
               {/* Weekly Progress */}
@@ -152,11 +223,10 @@ export default function DailyWinsPage() {
                   {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, index) => (
                     <div key={index} className="text-center">
                       <div className="text-xs font-semibold text-[#6B7280] mb-2">{day}</div>
-                      <div className={`w-full h-10 rounded-lg flex items-center justify-center transition-all ${
-                        index < 4 ? 'bg-green-500 shadow-sm hover:shadow-md' : 
-                        index === 4 ? 'bg-[#1976D2] shadow-md scale-110' : 
-                        'bg-gray-100'
-                      }`}>
+                      <div className={`w-full h-10 rounded-lg flex items-center justify-center transition-all ${index < 4 ? 'bg-green-500 shadow-sm hover:shadow-md' :
+                          index === 4 ? 'bg-[#1976D2] shadow-md scale-110' :
+                            'bg-gray-100'
+                        }`}>
                         {index < 5 && (
                           <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -171,15 +241,15 @@ export default function DailyWinsPage() {
 
             {/* Date Navigation */}
             <div className="flex items-center justify-between">
-              <button 
+              <button
                 onClick={handlePreviousDay}
                 className="h-11 px-6 bg-white border border-[#E5E7EB] rounded-lg text-sm font-semibold text-[#374151] hover:bg-[#F9FAFB] hover:border-[#D1D5DB] hover:shadow-md transition-all flex items-center gap-2"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Previous Day
               </button>
-              
-              <button 
+
+              <button
                 onClick={() => setShowCalendar(!showCalendar)}
                 className="relative"
               >
@@ -201,7 +271,7 @@ export default function DailyWinsPage() {
                         <ChevronRight className="w-5 h-5 text-[#6B7280]" />
                       </button>
                     </div>
-                    
+
                     <div className="grid grid-cols-7 gap-2 mb-2">
                       {daysOfWeek.map(day => (
                         <div key={day} className="text-center text-xs font-bold text-[#6B7280] py-2">
@@ -209,30 +279,29 @@ export default function DailyWinsPage() {
                         </div>
                       ))}
                     </div>
-                    
+
                     <div className="grid grid-cols-7 gap-2">
                       {calendarDays.map((day, index) => (
                         <button
                           key={index}
                           onClick={() => day && handleDateSelect(day)}
                           disabled={!day}
-                          className={`h-11 flex items-center justify-center rounded-lg text-sm font-semibold transition-all ${
-                            !day 
-                              ? 'cursor-default' 
+                          className={`h-11 flex items-center justify-center rounded-lg text-sm font-semibold transition-all ${!day
+                              ? 'cursor-default'
                               : day === selectedDate.getDate()
                                 ? 'bg-[#1976D2] text-white shadow-md scale-110'
                                 : 'hover:bg-[#F3F4F6] text-[#374151] hover:scale-105'
-                          }`}
+                            }`}
                         >
                           {day || ''}
                         </button>
                       ))}
                     </div>
-                    
+
                     <div className="mt-5 pt-4 border-t border-[#E5E7EB]">
-                      <button 
+                      <button
                         onClick={() => {
-                          setSelectedDate(new Date(2026, 1, 26));
+                          setSelectedDate(TODAY);
                           setShowCalendar(false);
                         }}
                         className="w-full h-11 bg-gradient-to-r from-[#1976D2] to-[#1565C0] text-white rounded-lg text-sm font-bold hover:shadow-lg transition-all"
@@ -243,15 +312,14 @@ export default function DailyWinsPage() {
                   </div>
                 )}
               </button>
-              
-              <button 
+
+              <button
                 onClick={handleNextDay}
                 disabled={isToday}
-                className={`h-11 px-6 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
-                  isToday 
-                    ? 'bg-[#F9FAFB] text-[#9CA3AF] cursor-not-allowed border border-[#E5E7EB]' 
+                className={`h-11 px-6 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${isToday
+                    ? 'bg-[#F9FAFB] text-[#9CA3AF] cursor-not-allowed border border-[#E5E7EB]'
                     : 'bg-white border border-[#E5E7EB] text-[#374151] hover:bg-[#F9FAFB] hover:border-[#D1D5DB] hover:shadow-md'
-                }`}
+                  }`}
               >
                 Next Day
                 <ChevronRight className="w-4 h-4" />
@@ -262,7 +330,7 @@ export default function DailyWinsPage() {
             <PACard className="p-8 shadow-md">
               <h2 className="text-xl font-semibold text-[#111827] mb-2">Record Your Progress</h2>
               <p className="text-sm text-[#6B7280] mb-8">Document your achievements and learnings for today</p>
-              
+
               <div className="space-y-6">
                 {/* Accomplishments */}
                 <div>
@@ -271,7 +339,7 @@ export default function DailyWinsPage() {
                   </label>
                   <textarea
                     value={formData.accomplishments}
-                    onChange={(e) => setFormData({...formData, accomplishments: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, accomplishments: e.target.value })}
                     placeholder="What did you accomplish today?"
                     className="w-full h-32 px-4 py-3 border border-[#E5E7EB] rounded-lg text-sm text-[#111827] placeholder-[#9CA3AF] focus:outline-none focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/10 resize-none transition-all"
                     rows={5}
@@ -289,7 +357,7 @@ export default function DailyWinsPage() {
                   </label>
                   <textarea
                     value={formData.learning}
-                    onChange={(e) => setFormData({...formData, learning: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, learning: e.target.value })}
                     placeholder="What did you learn today?"
                     className="w-full h-32 px-4 py-3 border border-[#E5E7EB] rounded-lg text-sm text-[#111827] placeholder-[#9CA3AF] focus:outline-none focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/10 resize-none transition-all"
                     rows={5}
@@ -307,7 +375,7 @@ export default function DailyWinsPage() {
                   </label>
                   <textarea
                     value={formData.tomorrowPlan}
-                    onChange={(e) => setFormData({...formData, tomorrowPlan: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, tomorrowPlan: e.target.value })}
                     placeholder="What are your goals for tomorrow?"
                     className="w-full h-32 px-4 py-3 border border-[#E5E7EB] rounded-lg text-sm text-[#111827] placeholder-[#9CA3AF] focus:outline-none focus:border-[#1976D2] focus:ring-2 focus:ring-[#1976D2]/10 resize-none transition-all"
                     rows={5}
@@ -320,12 +388,21 @@ export default function DailyWinsPage() {
               </div>
 
               {/* Submit Button */}
-              <div className="flex justify-end mt-8 pt-6 border-t border-[#E5E7EB]">
-                <button 
+              <div className="flex items-center justify-between mt-8 pt-6 border-t border-[#E5E7EB]">
+                {saveStatus === 'success' && (
+                  <p className="text-sm text-green-600 font-medium">✓ Saved successfully!</p>
+                )}
+                {saveStatus === 'error' && (
+                  <p className="text-sm text-red-600">Failed to save. Please try again.</p>
+                )}
+                {saveStatus === 'idle' && <span />}
+                <button
                   onClick={handleSubmit}
-                  className="h-12 px-10 bg-gradient-to-r from-[#1976D2] to-[#1565C0] text-white rounded-lg font-bold hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                  disabled={isSaving || !selfProfile}
+                  className="h-12 px-10 bg-gradient-to-r from-[#1976D2] to-[#1565C0] text-white rounded-lg font-bold hover:shadow-xl transition-all duration-200 transform hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
                 >
-                  Submit Daily Wins
+                  {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {isSaving ? 'Saving...' : 'Submit Daily Wins'}
                 </button>
               </div>
             </PACard>
