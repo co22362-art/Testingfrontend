@@ -1,10 +1,8 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router';
 import { TrendingUp, Users, CheckCircle, Clock, ArrowRight, MoreVertical, Activity, Target, Zap, Award } from 'lucide-react';
 import PAAppLayout from '../../components/PAAppLayout';
 import PACard from '../../components/ui/PACard';
 
-interface StatCard {
+export interface StatCard {
   id: number;
   title: string;
   value: string;
@@ -14,7 +12,7 @@ interface StatCard {
   color: 'blue' | 'green' | 'orange' | 'purple';
 }
 
-interface ActivityItem {
+export interface ActivityItem {
   id: number;
   user: string;
   action: string;
@@ -23,7 +21,7 @@ interface ActivityItem {
   color: string;
 }
 
-interface QuickAction {
+export interface QuickAction {
   id: number;
   title: string;
   description: string;
@@ -32,69 +30,117 @@ interface QuickAction {
   color: 'blue' | 'green' | 'orange' | 'purple';
 }
 
-export default function DashboardPage() {
-  const navigate = useNavigate();
+export interface ProjectOverview {
+  inProgress: { count: number; progress: number };
+  completed: { count: number; progress: number };
+  onHold: { count: number; progress: number };
+}
 
-  const stats: StatCard[] = [
-    { 
-      id: 1, 
-      title: 'Total Users', 
-      value: '2,847', 
-      change: '+12.5%',
-      changeType: 'positive',
-      icon: Users,
-      color: 'blue'
-    },
-    { 
-      id: 2, 
-      title: 'Active Projects', 
-      value: '142', 
-      change: '+8.2%',
-      changeType: 'positive',
-      icon: Target,
-      color: 'green'
-    },
-    { 
-      id: 3, 
-      title: 'Pending Tasks', 
-      value: '89', 
-      change: '-5.4%',
-      changeType: 'negative',
-      icon: Clock,
-      color: 'orange'
-    },
-    { 
-      id: 4, 
-      title: 'Revenue', 
-      value: '$45.2K', 
-      change: '+18.7%',
-      changeType: 'positive',
-      icon: TrendingUp,
-      color: 'purple'
-    }
-  ];
+interface DashboardPageProps {
+  stats?: StatCard[];
+  recentActivity?: ActivityItem[];
+  quickActions?: QuickAction[];
+  projectOverview?: ProjectOverview;
+  isLoading?: boolean;
+  onQuickAction?: (path: string) => void;
+}
 
-  const recentActivity: ActivityItem[] = [
-    { id: 1, user: 'John Doe', action: 'created a new project', time: '5 minutes ago', initials: 'JD', color: 'bg-blue-500' },
-    { id: 2, user: 'Sarah Smith', action: 'completed task #234', time: '15 minutes ago', initials: 'SS', color: 'bg-green-500' },
-    { id: 3, user: 'Mike Johnson', action: 'updated user permissions', time: '1 hour ago', initials: 'MJ', color: 'bg-purple-500' },
-    { id: 4, user: 'Emily Brown', action: 'submitted daily report', time: '2 hours ago', initials: 'EB', color: 'bg-orange-500' },
-    { id: 5, user: 'David Lee', action: 'joined the team', time: '3 hours ago', initials: 'DL', color: 'bg-pink-500' }
-  ];
+// Default mock data for Figma preview
+const DEFAULT_STATS: StatCard[] = [
+  { 
+    id: 1, 
+    title: 'Total Users', 
+    value: '2,847', 
+    change: '+12.5%',
+    changeType: 'positive',
+    icon: Users,
+    color: 'blue'
+  },
+  { 
+    id: 2, 
+    title: 'Active Projects', 
+    value: '142', 
+    change: '+8.2%',
+    changeType: 'positive',
+    icon: Target,
+    color: 'green'
+  },
+  { 
+    id: 3, 
+    title: 'Pending Tasks', 
+    value: '89', 
+    change: '-5.4%',
+    changeType: 'negative',
+    icon: Clock,
+    color: 'orange'
+  },
+  { 
+    id: 4, 
+    title: 'Revenue', 
+    value: '$45.2K', 
+    change: '+18.7%',
+    changeType: 'positive',
+    icon: TrendingUp,
+    color: 'purple'
+  }
+];
 
-  const quickActions: QuickAction[] = [
-    { id: 1, title: 'User Management', description: 'Manage team members', path: '/people', icon: Users, color: 'blue' },
-    { id: 2, title: 'Daily Wins', description: 'Track daily progress', path: '/daily-wins', icon: Award, color: 'green' },
-    { id: 3, title: 'Analytics', description: 'View insights', path: '#', icon: Activity, color: 'purple' },
-    { id: 4, title: 'Performance', description: 'Team metrics', path: '#', icon: Zap, color: 'orange' }
-  ];
+const DEFAULT_ACTIVITY: ActivityItem[] = [
+  { id: 1, user: 'John Doe', action: 'created a new project', time: '5 minutes ago', initials: 'JD', color: 'bg-blue-500' },
+  { id: 2, user: 'Sarah Smith', action: 'completed task #234', time: '15 minutes ago', initials: 'SS', color: 'bg-green-500' },
+  { id: 3, user: 'Mike Johnson', action: 'updated user permissions', time: '1 hour ago', initials: 'MJ', color: 'bg-purple-500' },
+  { id: 4, user: 'Emily Brown', action: 'submitted daily report', time: '2 hours ago', initials: 'EB', color: 'bg-orange-500' },
+  { id: 5, user: 'David Lee', action: 'joined the team', time: '3 hours ago', initials: 'DL', color: 'bg-pink-500' }
+];
 
+const DEFAULT_QUICK_ACTIONS: QuickAction[] = [
+  { id: 1, title: 'User Management', description: 'Manage team members', path: '/people', icon: Users, color: 'blue' },
+  { id: 2, title: 'Daily Wins', description: 'Track daily progress', path: '/daily-wins', icon: Award, color: 'green' },
+  { id: 3, title: 'Analytics', description: 'View insights', path: '#', icon: Activity, color: 'purple' },
+  { id: 4, title: 'Performance', description: 'Team metrics', path: '#', icon: Zap, color: 'orange' }
+];
+
+const DEFAULT_PROJECT_OVERVIEW: ProjectOverview = {
+  inProgress: { count: 64, progress: 65 },
+  completed: { count: 127, progress: 100 },
+  onHold: { count: 23, progress: 35 }
+};
+
+export default function DashboardPage({
+  stats = DEFAULT_STATS,
+  recentActivity = DEFAULT_ACTIVITY,
+  quickActions = DEFAULT_QUICK_ACTIONS,
+  projectOverview = DEFAULT_PROJECT_OVERVIEW,
+  isLoading = false,
+  onQuickAction
+}: DashboardPageProps) {
   const iconColors: Record<'blue' | 'green' | 'orange' | 'purple', string> = {
     blue: 'bg-blue-50 text-blue-600',
     green: 'bg-green-50 text-green-600',
     orange: 'bg-orange-50 text-orange-600',
     purple: 'bg-purple-50 text-purple-600'
   };
+
+  const handleQuickActionClick = (path: string) => {
+    if (onQuickAction) {
+      onQuickAction(path);
+    } else if (path !== '#') {
+      window.location.href = path;
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <PAAppLayout activePage="dashboard">
+        <div className="flex-1 flex items-center justify-center bg-[#F9FAFB]">
+          <div className="text-center">
+            <div className="w-12 h-12 border-4 border-[#1976D2] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-sm text-[#6B7280]">Loading dashboard...</p>
+          </div>
+        </div>
+      </PAAppLayout>
+    );
+  }
 
   return (
     <PAAppLayout activePage="dashboard">
@@ -182,7 +228,7 @@ export default function DashboardPage() {
                       return (
                         <button
                           key={action.id}
-                          onClick={() => action.path !== '#' && navigate(action.path)}
+                          onClick={() => handleQuickActionClick(action.path)}
                           className="w-full text-left p-4 rounded-lg border border-[#E5E7EB] hover:border-[#1976D2] hover:bg-blue-50 transition-all duration-200 group"
                         >
                           <div className="flex items-center gap-3">
@@ -217,10 +263,10 @@ export default function DashboardPage() {
                     <p className="text-sm font-semibold text-[#6B7280]">In Progress</p>
                     <div className="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></div>
                   </div>
-                  <p className="text-3xl font-bold text-[#111827] mb-2">64</p>
+                  <p className="text-3xl font-bold text-[#111827] mb-2">{projectOverview.inProgress.count}</p>
                   <p className="text-sm text-[#6B7280]">Active development</p>
                   <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-500 rounded-full" style={{ width: '65%' }}></div>
+                    <div className="h-full bg-blue-500 rounded-full" style={{ width: `${projectOverview.inProgress.progress}%` }}></div>
                   </div>
                 </div>
                 
@@ -229,10 +275,10 @@ export default function DashboardPage() {
                     <p className="text-sm font-semibold text-[#6B7280]">Completed</p>
                     <CheckCircle className="w-5 h-5 text-green-500" />
                   </div>
-                  <p className="text-3xl font-bold text-[#111827] mb-2">127</p>
+                  <p className="text-3xl font-bold text-[#111827] mb-2">{projectOverview.completed.count}</p>
                   <p className="text-sm text-[#6B7280]">Successfully delivered</p>
                   <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-green-500 rounded-full" style={{ width: '100%' }}></div>
+                    <div className="h-full bg-green-500 rounded-full" style={{ width: `${projectOverview.completed.progress}%` }}></div>
                   </div>
                 </div>
                 
@@ -241,10 +287,10 @@ export default function DashboardPage() {
                     <p className="text-sm font-semibold text-[#6B7280]">On Hold</p>
                     <div className="w-3 h-3 rounded-full bg-orange-500"></div>
                   </div>
-                  <p className="text-3xl font-bold text-[#111827] mb-2">23</p>
+                  <p className="text-3xl font-bold text-[#111827] mb-2">{projectOverview.onHold.count}</p>
                   <p className="text-sm text-[#6B7280]">Awaiting approval</p>
                   <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-orange-500 rounded-full" style={{ width: '35%' }}></div>
+                    <div className="h-full bg-orange-500 rounded-full" style={{ width: `${projectOverview.onHold.progress}%` }}></div>
                   </div>
                 </div>
               </div>
