@@ -1,61 +1,134 @@
-**Add your own guidelines here**
-<!--
+# Project Assist — Figma AI Guidelines
 
-System Guidelines
+> **CRITICAL ARCHITECTURE RULE:**
+> The entire frontend is being built from scratch in Figma. Figma is the single source of truth for all UI. All components are TypeScript (`.tsx`). 
+> **Figma Make ONLY handles UI. It NEVER handles logic, fetching, or routing.**
 
-Use this file to provide the AI with rules and guidelines you want it to follow.
-This template outlines a few examples of things you can add. You can add your own sections and format it to suit your needs
+---
 
-TIP: More context isn't always better. It can confuse the LLM. Try and add the most important rules you need
+# 1. Engineering & Architecture Rules
 
-# General guidelines
+1. **Strictly Prop-Driven:** All page components and UI components MUST be fully prop-driven. They receive data, they emit events (like `onClick`, `onSubmit`). They do nothing else.
+2. **No Data Fetching:** **NEVER** include `fetch()`, `axios`, `useEffect` for data loading, or any API calls inside generated components. The engineering team will wrap these components in a separate `connected/` directory to provide data.
+3. **Mock Data Only:** Use mock data only as default prop values for preview purposes.
+4. **Safe Zones (Hands-Off):** Do NOT modify `src/main.tsx`, `vite.config.ts`, or anything inside `src/connected/` or `src/services/`.
+5. **Output Directory:** Place all generated pages strictly in `src/app/modules/`. Place shared UI components in `src/app/components/`.
 
-Any general rules you want the AI to follow.
-For example:
+---
 
-* Only use absolute positioning when necessary. Opt for responsive and well structured layouts that use flexbox and grid by default
-* Refactor code as you go to keep code clean
-* Keep file sizes small and put helper functions and components in their own files.
+# 2. General UI Guidelines
 
---------------
+* Use flexbox and grid by default. Avoid absolute positioning except for overlays, tooltips, and dropdowns.
+* Design mobile-aware but desktop-first. Primary breakpoint is 1440px, secondary is 1024px.
+* Use an 8pt spacing grid throughout. Only use these spacing values: 4, 8, 12, 16, 24, 32, 48, 64px.
+* Every screen must have a loading state and an empty state variant.
+* Keep components modular — no one-off styles. If a pattern appears twice, it becomes a component.
+* Layer and component names must match React component names exactly. All components are TypeScript (.tsx) files.
+* Refactor and clean up as you go. Do not leave orphaned layers or hidden elements.
+* All components must support Light and Dark theme variants using the token system defined below.
 
-# Design system guidelines
-Rules for how the AI should make generations look like your company's design system
+---
 
-Additionally, if you select a design system to use in the prompt box, you can reference
-your design system's components, tokens, variables and components.
-For example:
+# 3. Theme System & Tokens
 
-* Use a base font-size of 14px
-* Date formats should always be in the format “Jun 10”
-* The bottom toolbar should only ever have a maximum of 4 items
-* Never use the floating action button with the bottom toolbar
-* Chips should always come in sets of 3 or more
-* Don't use a dropdown if there are 2 or fewer options
+**Rule:** Never hardcode hex values in a component. Always reference a semantic token (e.g. `className="bg-background-primary text-brand-primary"`).
 
-You can also create sub sections and add more specific details
-For example:
+## Token Naming Convention
+* `color/background/primary`, `color/background/secondary`, `color/background/sidebar`, `color/background/card`, `color/background/hover`
+* `color/text/primary`, `color/text/secondary`, `color/text/muted`, `color/text/inverse`
+* `color/border/default`, `color/border/focus`
+* `color/brand/primary`, `color/brand/hover`, `color/brand/subtle`
+* `color/status/success`, `color/status/warning`, `color/status/error`, `color/status/info`
 
+## Theme Rules
+* Every component must be designed in both Light and Dark mode.
+* Sidebar background stays dark (`color/background/sidebar`) in both themes.
+* Brand Amber (`#F59E0B`) is consistent across both themes as the primary accent.
+* Shadows become more subtle in dark mode — use opacity-based shadows, not hardcoded colors.
 
-## Button
-The Button component is a fundamental interactive element in our design system, designed to trigger actions or navigate
-users through the application. It provides visual feedback and clear affordances to enhance user experience.
+---
 
-### Usage
-Buttons should be used for important actions that users need to take, such as form submissions, confirming choices,
-or initiating processes. They communicate interactivity and should have clear, action-oriented labels.
+# 4. Design System Guidelines
 
-### Variants
-* Primary Button
-  * Purpose : Used for the main action in a section or page
-  * Visual Style : Bold, filled with the primary brand color
-  * Usage : One primary button per section to guide users toward the most important action
-* Secondary Button
-  * Purpose : Used for alternative or supporting actions
-  * Visual Style : Outlined with the primary color, transparent background
-  * Usage : Can appear alongside a primary button for less important actions
-* Tertiary Button
-  * Purpose : Used for the least important actions
-  * Visual Style : Text-only with no border, using primary color
-  * Usage : For actions that should be available but not emphasized
--->
+## Typography
+* Base font size: 14px. Line height: 1.5.
+* Font scale (strict): 12px, 14px, 16px, 18px, 20px, 24px, 30px. No arbitrary sizes.
+* Headings: Semibold (600). Body: Regular (400). Labels and captions: Medium (500).
+
+## Spacing & Layout
+* Sidebar width: 240px expanded, 64px collapsed.
+* Top navbar height: 56px.
+* Page content max-width: 1280px, centered with 24px horizontal padding.
+* Card padding: 16px (compact) or 24px (default). Never mix within the same view.
+* Section spacing between page blocks: 32px.
+
+## Border Radius
+* sm: 4px — tags, badges
+* md: 8px — inputs, buttons, cards
+* lg: 12px — modals, drawers, larger cards
+* xl: 16px — feature panels
+
+## Buttons
+* One primary (`color/brand/primary` filled) button per section maximum.
+* Secondary: `color/border/default` outlined, transparent background.
+* Tertiary: text-only, no border, `color/text/secondary`.
+* Destructive: `color/status/error` filled. Never use Amber for destructive actions.
+* Heights: 36px default, 32px compact, 44px large.
+* Loading state: replace label with a spinner, keep button width fixed.
+
+## Forms & Inputs
+* Label always above the input. Never use placeholder as a label substitute.
+* Required fields marked with * in `color/brand/primary`.
+* Validation errors below the field in `color/status/error` at 12px.
+* Input height: 40px across all form types.
+* Related fields: 16px gap. Field groups: 24px gap.
+
+## Tables
+* Row height: 48px default, 40px compact.
+* Sticky header on all scrollable tables.
+* Empty state: icon + message + CTA.
+* Column headers: `color/text/muted`, 12px, uppercase, letter-spacing 0.05em.
+
+## Modals & Dialogs
+* Widths: sm=400px, md=560px, lg=720px. Full-screen for complex multi-step forms.
+* Always include Cancel + clearly labeled confirm action.
+* Confirmation modal required for all irreversible or destructive actions.
+
+---
+
+# 5. Project Structure & Page Organization
+
+## Module Numbering Convention
+All modules follow a 4-digit prefix in the 3000-range. New modules continue the sequence. Never reuse or skip numbers.
+
+| ID   | Module Name        | Route                | Primary File      |
+|------|--------------------|----------------------|-------------------|
+| 3000 | User Login         | /login               | SignIn.tsx        |
+| 3001 | Homepage           | /dashboard           | HomeDashboard.tsx |
+| 3010 | Daily Wins         | /daily-wins          | index.tsx         |
+| 3012 | People             | /people              | index.tsx         |
+
+## Within Each Module Page (frame order)
+1. Default / Main State — Light Theme
+2. Default / Main State — Dark Theme
+3. Loading State
+4. Empty State
+5. Error State
+6. Create / Edit Modal or Drawer (if applicable)
+
+## Component Naming
+* Module-scoped: prefixed with module name — e.g., `Projects/ProjectCard.tsx`
+* Shared: live in Components page, no module prefix
+* Names must match the `.tsx` filename exactly.
+
+---
+
+# 6. Frontend ↔ Figma Traceability
+
+```text
+Figma Page              →  Module Folder                    →  Route             →  RPC Prefix
+3002 · Projects         →  src/modules/3002_projects        →  /projects         →  pg_projects_*
+3011 · Project Groups   →  src/modules/3011_project_groups  →  /project-groups   →  project_group_*
+3012 · People           →  src/modules/3012_people          →  /people           →  employee_*
+```
+Every layer uses the same identity. A design change traces from Figma → `.tsx` → service → Edge Function → RPC without ambiguity.
