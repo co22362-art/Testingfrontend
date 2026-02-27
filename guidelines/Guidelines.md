@@ -105,8 +105,16 @@ All modules follow a 4-digit prefix in the 3000-range. New modules continue the 
 |------|--------------------|----------------------|-------------------|
 | 3000 | User Login         | /login               | SignIn.tsx        |
 | 3001 | Homepage           | /dashboard           | HomeDashboard.tsx |
+| 3002 | Projects           | /projects            | index.tsx         |
+| 3003 | Mails              | /mails               | index.tsx         |
+| 3004 | CAD Manager        | /cad-manager         | index.tsx         |
+| 3005 | Time Sheets        | /time-sheets         | index.tsx         |
 | 3010 | Daily Wins         | /daily-wins          | index.tsx         |
+| 3011 | Project Groups     | /project-groups      | index.tsx         |
 | 3012 | People             | /people              | index.tsx         |
+| 3013 | Tutorials          | /tutorials           | index.tsx         |
+| 3016 | Form Builder       | /form-builder        | index.tsx         |
+| 3021 | License Management | /license-management  | index.tsx         |
 
 ## Within Each Module Page (frame order)
 1. Default / Main State — Light Theme
