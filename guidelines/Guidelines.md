@@ -126,9 +126,18 @@ All modules follow a 4-digit prefix in the 3000-range. New modules continue the 
 # 6. Frontend ↔ Figma Traceability
 
 ```text
-Figma Page              →  Module Folder                    →  Route             →  RPC Prefix
-3002 · Projects         →  src/modules/3002_projects        →  /projects         →  pg_projects_*
-3011 · Project Groups   →  src/modules/3011_project_groups  →  /project-groups   →  project_group_*
-3012 · People           →  src/modules/3012_people          →  /people           →  employee_*
+Figma Page              →  Module Folder                    →  Route                →  RPC Prefix
+3000 · Login            →  src/modules/3000_user_login      →  /login               →  auth_*
+3001 · Homepage         →  src/modules/3001_homepage        →  /dashboard           →  dash_*
+3002 · Projects         →  src/modules/3002_projects        →  /projects            →  pg_projects_*
+3003 · Mails            →  src/modules/3003_mails           →  /mails               →  mail_*
+3004 · CAD Manager      →  src/modules/3004_cad_manager     →  /cad-manager         →  cad_*
+3005 · Time Sheets      →  src/modules/3005_time_sheets     →  /time-sheets         →  ts_*
+3010 · Daily Wins       →  src/modules/3010_daily_wins      →  /daily-wins          →  dw_*
+3011 · Project Groups   →  src/modules/3011_project_groups  →  /project-groups      →  project_group_*
+3012 · People           →  src/modules/3012_people          →  /people              →  employee_*
+3013 · Tutorials        →  src/modules/3013_tutorials       →  /tutorials           →  tut_*
+3016 · Form Builder     →  src/modules/3016_form_builder    →  /form-builder        →  form_*
+3021 · License Mgt      →  src/modules/3021_license         →  /license-management  →  lic_*
 ```
 Every layer uses the same identity. A design change traces from Figma → `.tsx` → service → Edge Function → RPC without ambiguity.
