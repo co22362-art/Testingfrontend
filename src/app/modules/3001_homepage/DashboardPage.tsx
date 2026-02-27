@@ -132,10 +132,10 @@ export default function DashboardPage({
   if (isLoading) {
     return (
       <PAAppLayout activePage="dashboard">
-        <div className="flex-1 flex items-center justify-center bg-[#F9FAFB]">
+        <div className="flex-1 flex items-center justify-center bg-background">
           <div className="text-center">
-            <div className="w-12 h-12 border-4 border-[#1976D2] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-sm text-[#6B7280]">Loading dashboard...</p>
+            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-sm text-muted-foreground">Loading dashboard...</p>
           </div>
         </div>
       </PAAppLayout>
@@ -144,13 +144,13 @@ export default function DashboardPage({
 
   return (
     <PAAppLayout activePage="dashboard">
-      <div className="flex-1 overflow-auto bg-[#F9FAFB]">
+      <div className="flex-1 overflow-auto bg-background">
         <div className="p-6 max-w-[1600px] mx-auto">
           <div className="space-y-6">
             {/* Page Header */}
             <div className="mb-2">
-              <h1 className="text-2xl font-semibold text-[#111827] mb-1">Dashboard</h1>
-              <p className="text-sm text-[#6B7280]">Welcome back! Here's what's happening today.</p>
+              <h1 className="text-2xl font-semibold text-foreground mb-1">Dashboard</h1>
+              <p className="text-sm text-muted-foreground">Welcome back! Here's what's happening today.</p>
             </div>
 
             {/* Stats Grid */}
@@ -165,14 +165,14 @@ export default function DashboardPage({
                       </div>
                       <div className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
                         stat.changeType === 'positive' 
-                          ? 'bg-green-50 text-green-700' 
-                          : 'bg-red-50 text-red-700'
+                          ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                          : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                       }`}>
                         {stat.change}
                       </div>
                     </div>
-                    <p className="text-sm font-medium text-[#6B7280] mb-1">{stat.title}</p>
-                    <p className="text-3xl font-bold text-[#111827]">{stat.value}</p>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">{stat.title}</p>
+                    <p className="text-3xl font-bold text-foreground">{stat.value}</p>
                   </PACard>
                 );
               })}
@@ -185,30 +185,30 @@ export default function DashboardPage({
                 <PACard variant="elevated" className="p-6 hover:shadow-lg transition-shadow duration-200">
                   <div className="flex items-center justify-between mb-6">
                     <div>
-                      <h2 className="text-lg font-semibold text-[#111827]">Recent Activity</h2>
-                      <p className="text-sm text-[#6B7280] mt-0.5">Latest updates from your team</p>
+                      <h2 className="text-lg font-semibold text-foreground">Recent Activity</h2>
+                      <p className="text-sm text-muted-foreground mt-0.5">Latest updates from your team</p>
                     </div>
-                    <button className="text-sm text-[#1976D2] hover:text-[#1565C0] font-semibold transition-colors">
+                    <button className="text-sm text-primary hover:opacity-80 font-semibold transition-colors">
                       View All
                     </button>
                   </div>
                   
                   <div className="space-y-1">
                     {recentActivity.map((activity) => (
-                      <div key={activity.id} className="flex items-center gap-4 p-3 rounded-lg hover:bg-[#F9FAFB] transition-colors group">
+                      <div key={activity.id} className="flex items-center gap-4 p-3 rounded-lg hover:bg-accent transition-colors group">
                         <div className={`w-10 h-10 rounded-lg ${activity.color} flex items-center justify-center flex-shrink-0 shadow-sm`}>
                           <span className="text-sm font-bold text-white">
                             {activity.initials}
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm text-[#111827]">
+                          <p className="text-sm text-foreground">
                             <span className="font-semibold">{activity.user}</span>{' '}
-                            <span className="text-[#6B7280]">{activity.action}</span>
+                            <span className="text-muted-foreground">{activity.action}</span>
                           </p>
-                          <p className="text-xs text-[#9CA3AF] mt-0.5">{activity.time}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{activity.time}</p>
                         </div>
-                        <button className="text-[#9CA3AF] hover:text-[#6B7280] opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button className="text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                           <MoreVertical className="w-4 h-4" />
                         </button>
                       </div>
@@ -220,8 +220,8 @@ export default function DashboardPage({
               {/* Quick Actions - 1 column */}
               <div>
                 <PACard variant="elevated" className="p-6 hover:shadow-lg transition-shadow duration-200">
-                  <h2 className="text-lg font-semibold text-[#111827] mb-1">Quick Actions</h2>
-                  <p className="text-sm text-[#6B7280] mb-5">Common tasks</p>
+                  <h2 className="text-lg font-semibold text-foreground mb-1">Quick Actions</h2>
+                  <p className="text-sm text-muted-foreground mb-5">Common tasks</p>
                   <div className="space-y-3">
                     {quickActions.map((action) => {
                       const Icon = action.icon;
@@ -229,19 +229,19 @@ export default function DashboardPage({
                         <button
                           key={action.id}
                           onClick={() => handleQuickActionClick(action.path)}
-                          className="w-full text-left p-4 rounded-lg border border-[#E5E7EB] hover:border-[#1976D2] hover:bg-blue-50 transition-all duration-200 group"
+                          className="w-full text-left p-4 rounded-lg border border-border hover:border-primary hover:bg-accent transition-all duration-200 group"
                         >
                           <div className="flex items-center gap-3">
                             <div className={`w-10 h-10 rounded-lg ${iconColors[action.color]} flex items-center justify-center group-hover:scale-110 transition-transform duration-200`}>
                               <Icon className="w-5 h-5" />
                             </div>
                             <div className="flex-1">
-                              <h3 className="font-semibold text-[#111827] text-sm mb-0.5">
+                              <h3 className="font-semibold text-foreground text-sm mb-0.5">
                                 {action.title}
                               </h3>
-                              <p className="text-xs text-[#6B7280]">{action.description}</p>
+                              <p className="text-xs text-muted-foreground">{action.description}</p>
                             </div>
-                            <ArrowRight className="w-4 h-4 text-[#9CA3AF] group-hover:text-[#1976D2] group-hover:translate-x-1 transition-all" />
+                            <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
                           </div>
                         </button>
                       );
@@ -254,42 +254,42 @@ export default function DashboardPage({
             {/* Project Overview */}
             <PACard variant="elevated" className="p-6 hover:shadow-lg transition-shadow duration-200">
               <div className="mb-6">
-                <h2 className="text-lg font-semibold text-[#111827]">Project Overview</h2>
-                <p className="text-sm text-[#6B7280] mt-0.5">Current project status across teams</p>
+                <h2 className="text-lg font-semibold text-foreground">Project Overview</h2>
+                <p className="text-sm text-muted-foreground mt-0.5">Current project status across teams</p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div className="p-5 border border-[#E5E7EB] rounded-lg bg-gradient-to-br from-blue-50 to-white hover:shadow-md transition-all duration-200">
+                <div className="p-5 border border-border rounded-lg bg-gradient-to-br from-blue-50 to-card dark:from-blue-950/30 dark:to-card hover:shadow-md transition-all duration-200">
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-sm font-semibold text-[#6B7280]">In Progress</p>
+                    <p className="text-sm font-semibold text-muted-foreground">In Progress</p>
                     <div className="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></div>
                   </div>
-                  <p className="text-3xl font-bold text-[#111827] mb-2">{projectOverview.inProgress.count}</p>
-                  <p className="text-sm text-[#6B7280]">Active development</p>
-                  <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <p className="text-3xl font-bold text-foreground mb-2">{projectOverview.inProgress.count}</p>
+                  <p className="text-sm text-muted-foreground">Active development</p>
+                  <div className="mt-4 h-2 bg-secondary rounded-full overflow-hidden">
                     <div className="h-full bg-blue-500 rounded-full" style={{ width: `${projectOverview.inProgress.progress}%` }}></div>
                   </div>
                 </div>
                 
-                <div className="p-5 border border-[#E5E7EB] rounded-lg bg-gradient-to-br from-green-50 to-white hover:shadow-md transition-all duration-200">
+                <div className="p-5 border border-border rounded-lg bg-gradient-to-br from-green-50 to-card dark:from-green-950/30 dark:to-card hover:shadow-md transition-all duration-200">
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-sm font-semibold text-[#6B7280]">Completed</p>
+                    <p className="text-sm font-semibold text-muted-foreground">Completed</p>
                     <CheckCircle className="w-5 h-5 text-green-500" />
                   </div>
-                  <p className="text-3xl font-bold text-[#111827] mb-2">{projectOverview.completed.count}</p>
-                  <p className="text-sm text-[#6B7280]">Successfully delivered</p>
-                  <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <p className="text-3xl font-bold text-foreground mb-2">{projectOverview.completed.count}</p>
+                  <p className="text-sm text-muted-foreground">Successfully delivered</p>
+                  <div className="mt-4 h-2 bg-secondary rounded-full overflow-hidden">
                     <div className="h-full bg-green-500 rounded-full" style={{ width: `${projectOverview.completed.progress}%` }}></div>
                   </div>
                 </div>
                 
-                <div className="p-5 border border-[#E5E7EB] rounded-lg bg-gradient-to-br from-orange-50 to-white hover:shadow-md transition-all duration-200">
+                <div className="p-5 border border-border rounded-lg bg-gradient-to-br from-orange-50 to-card dark:from-orange-950/30 dark:to-card hover:shadow-md transition-all duration-200">
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-sm font-semibold text-[#6B7280]">On Hold</p>
+                    <p className="text-sm font-semibold text-muted-foreground">On Hold</p>
                     <div className="w-3 h-3 rounded-full bg-orange-500"></div>
                   </div>
-                  <p className="text-3xl font-bold text-[#111827] mb-2">{projectOverview.onHold.count}</p>
-                  <p className="text-sm text-[#6B7280]">Awaiting approval</p>
-                  <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <p className="text-3xl font-bold text-foreground mb-2">{projectOverview.onHold.count}</p>
+                  <p className="text-sm text-muted-foreground">Awaiting approval</p>
+                  <div className="mt-4 h-2 bg-secondary rounded-full overflow-hidden">
                     <div className="h-full bg-orange-500 rounded-full" style={{ width: `${projectOverview.onHold.progress}%` }}></div>
                   </div>
                 </div>

@@ -19,17 +19,4 @@ export default defineConfig({
 
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
-
-  // ── OUR ADDITION: Proxy API calls to backend services ──────────
-  // Vite forwards /api/* to the correct backend port server-side.
-  // This avoids CORS issues and allows HttpOnly cookies to flow.
-  server: {
-    proxy: {
-      '/api/signin': { target: 'http://localhost:3000', changeOrigin: true },
-      '/api/signout': { target: 'http://localhost:3000', changeOrigin: true },
-      '/api/me': { target: 'http://localhost:3000', changeOrigin: true },
-      '/api/employees': { target: 'http://localhost:3012', changeOrigin: true },
-      '/api/daily-wins': { target: 'http://localhost:3010', changeOrigin: true },
-    }
-  }
 })

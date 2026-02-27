@@ -117,11 +117,11 @@ export default function GroupPermissionsModal({ isOpen, onClose }: GroupPermissi
         <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-end gap-3">
           <button 
             onClick={onClose}
-            className="h-10 px-6 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+            className="h-10 px-6 bg-card border border-border text-foreground rounded-lg font-medium hover:bg-accent transition-colors"
           >
             Cancel
           </button>
-          <button className="h-10 px-6 bg-[#1976D2] text-white rounded-lg font-medium hover:bg-[#1565C0] transition-colors">
+          <button className="h-10 px-6 bg-primary text-white rounded-lg font-medium hover:opacity-90 transition-colors">
             Save Permissions
           </button>
         </div>
