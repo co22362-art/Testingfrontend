@@ -8,17 +8,7 @@ import {
 } from 'lucide-react';
 import PAAppLayout from '../../components/PAAppLayout';
 import GroupPermissionsModal from './components/GroupPermissionsModal';
-
-export interface User {
-  id: number;
-  empCode: string;
-  name: string;
-  email: string;
-  role: string;
-  department: string;
-  classification: string;
-  status: 'ACTIVE' | 'INACTIVE';
-}
+import { mockUsers, type User } from '@/app/data/mockPeopleData';
 
 interface Filters {
   status: string;
@@ -39,22 +29,8 @@ interface PeoplePageProps {
   onSettingsClick?: () => void;
 }
 
-// Default mock data for Figma preview
-const DEFAULT_USERS: User[] = [
-  { id: 1, empCode: 'E002', name: 'Aditya EGIS', email: 'scipl_pc_001@outlook.com', role: 'Testing', department: 'Quality Testing', classification: 'QLT', status: 'ACTIVE' },
-  { id: 2, empCode: 'E001', name: 'Aman EGIS', email: 'aman.spannovation@gmail.com', role: 'Director', department: 'Quality Testing', classification: 'Manager', status: 'ACTIVE' },
-  { id: 3, empCode: 'INT-006', name: 'Aryan Rawat', email: 'aryanrawat4044@gmail.com', role: 'Programming', department: 'CSE', classification: 'ENG', status: 'ACTIVE' },
-  { id: 4, empCode: 'INT-001', name: 'Jaspreet Kaur', email: 'jaspreet4143@gmail.com', role: 'Drafting', department: 'Drafting', classification: 'Draftsman', status: 'ACTIVE' },
-  { id: 5, empCode: 'INT-002', name: 'Jaspreet Kaur', email: 'jaspreetkaur786@gmail.com', role: 'Drafting', department: 'Drafting', classification: 'Draftsman', status: 'ACTIVE' },
-  { id: 6, empCode: 'INT-003', name: 'Nancy _', email: 'nancygujar012@gmail.com', role: 'Drafting', department: 'Drafting', classification: 'Draftsman', status: 'ACTIVE' },
-  { id: 7, empCode: 'M001', name: 'Preeti Garg', email: 'mgmt.spannovation@gmail.com', role: 'Director', department: 'ENG', classification: 'Manager', status: 'ACTIVE' },
-  { id: 8, empCode: 'INT-005', name: 'Shaurya Katna', email: 'shauryakatna7@gmail.com', role: 'Programming', department: 'CSE', classification: 'ENG', status: 'ACTIVE' },
-  { id: 9, empCode: 'E003', name: 'Shivani Shukla', email: 'sshukla.structure@gmail.com', role: 'Testing', department: 'Quality Testing', classification: 'QLT', status: 'ACTIVE' },
-  { id: 10, empCode: 'Try001', name: 'try', email: 'asing1@egscif.in', role: '—', department: '—', classification: '—', status: 'INACTIVE' },
-];
-
 export default function PeoplePage({
-  users = DEFAULT_USERS,
+  users = mockUsers,
   isLoading = false,
   onAddUser,
   onEditUser,
@@ -92,7 +68,7 @@ export default function PeoplePage({
 
   if (isLoading) {
     return (
-      <PAAppLayout activePage="people">
+      <PAAppLayout>
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="text-center">
             <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
@@ -104,7 +80,7 @@ export default function PeoplePage({
   }
 
   return (
-    <PAAppLayout activePage="people">
+    <PAAppLayout>
       {/* User Management Content */}
       <div className="flex-1 overflow-auto p-6">
         {/* Page Header */}
@@ -265,18 +241,18 @@ export default function PeoplePage({
                     <td className="px-4 py-3 text-xs text-foreground">
                       <div className="flex items-center gap-2">
                         {user.status === 'INACTIVE' && (
-                          <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                          <span className="w-2 h-2 bg-destructive rounded-full"></span>
                         )}
                         {user.id}
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       {user.status === 'ACTIVE' ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-600 dark:bg-green-500/20 dark:text-green-400">
                           ACTIVE
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-destructive/10 text-destructive">
                           INACTIVE
                         </span>
                       )}

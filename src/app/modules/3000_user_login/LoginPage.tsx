@@ -1,6 +1,6 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
-import structIQeLogo from 'figma:asset/1ef35a9403b2d1d301197ac61939f562bd4cdc8e.png';
+import { useNavigate } from 'react-router';
 
 interface LoginCredentials {
   email: string;
@@ -54,6 +54,7 @@ export default function LoginPage({
   isLoading = false,
   error = null
 }: LoginPageProps) {
+  const navigate = useNavigate();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -97,7 +98,7 @@ export default function LoginPage({
       } else {
         // Default behavior for Figma preview
         console.log('Login attempt:', { email, password });
-        window.location.href = '/dashboard';
+        navigate('/dashboard');
       }
     }
   };
@@ -106,12 +107,10 @@ export default function LoginPage({
     <div className="flex h-screen overflow-hidden relative">
       {/* Company Logo - Top Right Corner */}
       <div className="absolute top-6 right-6 z-20">
-        <div className="inline-block px-4 py-2 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg">
-          <img 
-            src={structIQeLogo} 
-            alt="structIQe Logo" 
-            className="h-10 w-auto"
-          />
+        <div className="inline-block">
+          <span className="font-bold text-foreground text-2xl">
+            struct<span className="text-red-500 italic">IQ</span>e
+          </span>
         </div>
       </div>
 
@@ -173,7 +172,7 @@ export default function LoginPage({
 
         {/* Copyright - Bottom Left */}
         <div className="absolute bottom-8 left-12 text-sm text-white/60 z-10">
-          © 2026 structiQe Technologies Pvt Ltd. All rights reserved.
+          © 2026 structIQe Technologies Pvt Ltd. All rights reserved.
         </div>
       </div>
 

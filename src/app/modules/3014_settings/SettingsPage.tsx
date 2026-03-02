@@ -46,7 +46,6 @@ export default function SettingsPage({
 
   return (
     <PAAppLayout
-      activePage="settings"
       userName={userName}
       userEmail={userEmail}
       onChangePassword={onChangePassword}

@@ -131,7 +131,7 @@ export default function DashboardPage({
 
   if (isLoading) {
     return (
-      <PAAppLayout activePage="dashboard">
+      <PAAppLayout>
         <div className="flex-1 flex items-center justify-center bg-background">
           <div className="text-center">
             <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
@@ -143,7 +143,7 @@ export default function DashboardPage({
   }
 
   return (
-    <PAAppLayout activePage="dashboard">
+    <PAAppLayout>
       <div className="flex-1 overflow-auto bg-background">
         <div className="p-6 max-w-[1600px] mx-auto">
           <div className="space-y-6">
