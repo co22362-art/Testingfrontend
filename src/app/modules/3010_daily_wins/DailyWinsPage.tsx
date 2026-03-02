@@ -29,6 +29,7 @@ interface DailyWinsPageProps {
   profile?: UserProfile;
   weekProgress?: WeekProgress;
   stats?: DailyStats;
+  employees?: Employee[];
   initialDate?: Date;
   todayDate?: Date;
   savedNote?: FormData;
@@ -68,6 +69,7 @@ export default function DailyWinsPage({
   profile = mockProfile,
   weekProgress = mockWeekProgress,
   stats = mockDailyStats,
+  employees = mockEmployees,
   initialDate = new Date(),
   todayDate = new Date(),
   savedNote,
@@ -81,16 +83,16 @@ export default function DailyWinsPage({
     learning: '',
     tomorrowPlan: ''
   });
-  
+
   // Employee sidebar state
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee>(mockEmployees[0]);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee>(employees[0]);
   const [employeeSearch, setEmployeeSearch] = useState('');
   const [sidebarWidth, setSidebarWidth] = useState(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     return stored ? parseInt(stored, 10) : DEFAULT_WIDTH;
   });
   const [isDragging, setIsDragging] = useState(false);
-  
+
   // Download logs state
   const [downloadPopoverOpen, setDownloadPopoverOpen] = useState<string | null>(null);
   const [fromDate, setFromDate] = useState(getFirstDayOfMonth());
@@ -100,8 +102,8 @@ export default function DailyWinsPage({
   const dragStartWidth = useRef(0);
 
   const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                      'July', 'August', 'September', 'October', 'November', 'December'];
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'];
 
   // Resizable sidebar handlers
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -135,7 +137,7 @@ export default function DailyWinsPage({
   }, [isDragging, sidebarWidth]);
 
   // Filter employees by search
-  const filteredEmployees = mockEmployees.filter(employee =>
+  const filteredEmployees = employees.filter(employee =>
     employee.name.toLowerCase().includes(employeeSearch.toLowerCase())
   );
 
@@ -151,7 +153,7 @@ export default function DailyWinsPage({
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-    
+
     const days: (number | null)[] = [];
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(null);
@@ -260,7 +262,7 @@ export default function DailyWinsPage({
                         </DropdownMenu>
                       }
                     />
-                    
+
                     {/* Download Logs Popover */}
                     <Popover
                       open={downloadPopoverOpen === employee.id}
@@ -358,13 +360,12 @@ export default function DailyWinsPage({
                     {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, index) => (
                       <div key={index} className="text-center">
                         <div className="text-xs font-semibold text-muted-foreground mb-2">{day}</div>
-                        <div className={`w-full h-10 rounded-lg flex items-center justify-center transition-all ${
-                          weekProgress.completed[index] 
-                            ? index === 4 
-                              ? 'bg-primary shadow-md scale-110' 
+                        <div className={`w-full h-10 rounded-lg flex items-center justify-center transition-all ${weekProgress.completed[index]
+                            ? index === 4
+                              ? 'bg-primary shadow-md scale-110'
                               : 'bg-green-500 shadow-sm hover:shadow-md'
                             : 'bg-muted'
-                        }`}>
+                          }`}>
                           {weekProgress.completed[index] && (
                             <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -379,15 +380,15 @@ export default function DailyWinsPage({
 
               {/* Date Navigation */}
               <div className="flex items-center justify-between">
-                <button 
+                <button
                   onClick={handlePreviousDay}
                   className="h-11 px-6 bg-card border border-border rounded-lg text-sm font-semibold text-foreground hover:bg-accent hover:shadow-md transition-all flex items-center gap-2"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   Previous Day
                 </button>
-                
-                <button 
+
+                <button
                   onClick={() => setShowCalendar(!showCalendar)}
                   className="relative"
                 >
@@ -409,7 +410,7 @@ export default function DailyWinsPage({
                           <ChevronRight className="w-5 h-5 text-muted-foreground" />
                         </button>
                       </div>
-                      
+
                       <div className="grid grid-cols-7 gap-2 mb-2">
                         {daysOfWeek.map(day => (
                           <div key={day} className="text-center text-xs font-bold text-muted-foreground py-2">
@@ -417,28 +418,27 @@ export default function DailyWinsPage({
                           </div>
                         ))}
                       </div>
-                      
+
                       <div className="grid grid-cols-7 gap-2">
                         {calendarDays.map((day, index) => (
                           <button
                             key={index}
                             onClick={() => day && handleDateSelect(day)}
                             disabled={!day}
-                            className={`h-11 flex items-center justify-center rounded-lg text-sm font-semibold transition-all ${
-                              !day 
-                                ? 'cursor-default' 
+                            className={`h-11 flex items-center justify-center rounded-lg text-sm font-semibold transition-all ${!day
+                                ? 'cursor-default'
                                 : day === selectedDate.getDate()
                                   ? 'bg-primary text-white shadow-md scale-110'
                                   : 'hover:bg-accent text-foreground hover:scale-105'
-                            }`}
+                              }`}
                           >
                             {day || ''}
                           </button>
                         ))}
                       </div>
-                      
+
                       <div className="mt-5 pt-4 border-t border-border">
-                        <button 
+                        <button
                           onClick={() => {
                             setSelectedDate(todayDate);
                             setShowCalendar(false);
@@ -451,15 +451,14 @@ export default function DailyWinsPage({
                     </div>
                   )}
                 </button>
-                
-                <button 
+
+                <button
                   onClick={handleNextDay}
                   disabled={isToday}
-                  className={`h-11 px-6 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
-                    isToday 
-                      ? 'bg-muted text-muted-foreground cursor-not-allowed border border-border' 
+                  className={`h-11 px-6 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${isToday
+                      ? 'bg-muted text-muted-foreground cursor-not-allowed border border-border'
                       : 'bg-card border border-border text-foreground hover:bg-accent hover:shadow-md'
-                  }`}
+                    }`}
                 >
                   Next Day
                   <ChevronRight className="w-4 h-4" />
@@ -470,7 +469,7 @@ export default function DailyWinsPage({
               <PACard className="p-8 shadow-md">
                 <h2 className="text-xl font-semibold text-foreground mb-2">Record Your Progress</h2>
                 <p className="text-sm text-muted-foreground mb-8">Document your achievements and learnings for today</p>
-                
+
                 <div className="space-y-6">
                   {/* Accomplishments */}
                   <div>
@@ -479,7 +478,7 @@ export default function DailyWinsPage({
                     </label>
                     <textarea
                       value={formData.accomplishments}
-                      onChange={(e) => setFormData({...formData, accomplishments: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, accomplishments: e.target.value })}
                       placeholder="What did you accomplish today?"
                       className="w-full h-32 px-4 py-3 border border-border rounded-lg text-sm text-foreground placeholder-muted-foreground bg-input-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-ring/10 resize-none transition-all"
                       rows={5}
@@ -498,7 +497,7 @@ export default function DailyWinsPage({
                     </label>
                     <textarea
                       value={formData.learning}
-                      onChange={(e) => setFormData({...formData, learning: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, learning: e.target.value })}
                       placeholder="What did you learn today?"
                       className="w-full h-32 px-4 py-3 border border-border rounded-lg text-sm text-foreground placeholder-muted-foreground bg-input-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-ring/10 resize-none transition-all"
                       rows={5}
@@ -517,7 +516,7 @@ export default function DailyWinsPage({
                     </label>
                     <textarea
                       value={formData.tomorrowPlan}
-                      onChange={(e) => setFormData({...formData, tomorrowPlan: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, tomorrowPlan: e.target.value })}
                       placeholder="What are your goals for tomorrow?"
                       className="w-full h-32 px-4 py-3 border border-border rounded-lg text-sm text-foreground placeholder-muted-foreground bg-input-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-ring/10 resize-none transition-all"
                       rows={5}
@@ -532,14 +531,13 @@ export default function DailyWinsPage({
 
                 {/* Submit Button */}
                 <div className="flex justify-end mt-8 pt-6 border-t border-border">
-                  <button 
+                  <button
                     onClick={handleSubmit}
                     disabled={isSaving}
-                    className={`h-12 px-10 rounded-lg font-bold transition-all duration-200 transform ${
-                      isSaving
+                    className={`h-12 px-10 rounded-lg font-bold transition-all duration-200 transform ${isSaving
                         ? 'bg-muted text-muted-foreground cursor-not-allowed'
                         : 'bg-gradient-to-r from-primary to-primary/80 text-white hover:shadow-xl hover:scale-105'
-                    }`}
+                      }`}
                   >
                     {isSaving ? 'Saving...' : 'Submit Daily Wins'}
                   </button>

@@ -40,35 +40,31 @@ color/background/secondary    color/text/secondary
 color/background/sidebar      color/text/muted
 color/background/card         color/text/inverse
 color/background/hover        color/border/default
-color/icon/default            color/border/focus
-                              
+                              color/border/focus
 color/brand/primary           color/status/success
 color/brand/hover             color/status/warning
 color/brand/subtle            color/status/error
                               color/status/info
-color/accent/purple           (Daily Wins module only)
 ```
 
 ## Token Values
 
 | Token                      | Light Mode | Dark Mode  |
 |----------------------------|------------|------------|
-| color/background/primary   | #F4F6F9    | #0F1117    |
-| color/background/secondary | #E5E7EB    | #1A1D27    |
-| color/background/sidebar   | #FFFFFF    | #1A1D27    |
-| color/background/card      | #FFFFFF    | #1E2130    |
-| color/background/hover     | #E5E7EB    | #2D3148    |
-| color/text/primary         | #111827    | #F9FAFB    |
-| color/text/secondary       | #6B7280    | #9CA3AF    |
-| color/text/muted           | #9CA3AF    | #6B7280    |
-| color/text/inverse         | #F9FAFB    | #111827    |
-| color/border/default       | #E5E7EB    | #2D3148    |
-| color/border/focus         | #1976D2    | #1976D2    |
-| color/icon/default         | #6B7280    | #9CA3AF    |
-| color/brand/primary        | #1976D2    | #1976D2    |
-| color/brand/hover          | #1565C0    | #42A5F5    |
-| color/brand/subtle         | #E3F2FD    | #0D47A1    |
-| color/accent/purple        | #6200EE    | #7C4DFF    |
+| color/background/primary   | #FFFFFF    | #0F172A    |
+| color/background/secondary | #F8FAFC    | #1E293B    |
+| color/background/sidebar   | #0F172A    | #020617    |
+| color/background/card      | #FFFFFF    | #1E293B    |
+| color/background/hover     | #F1F5F9    | #334155    |
+| color/text/primary         | #0F172A    | #F8FAFC    |
+| color/text/secondary       | #334155    | #CBD5E1    |
+| color/text/muted           | #64748B    | #64748B    |
+| color/text/inverse         | #F8FAFC    | #0F172A    |
+| color/border/default       | #E2E8F0    | #334155    |
+| color/border/focus         | #F59E0B    | #F59E0B    |
+| color/brand/primary        | #F59E0B    | #F59E0B    |
+| color/brand/hover          | #D97706    | #FBBF24    |
+| color/brand/subtle         | #FEF3C7    | #292524    |
 | color/status/success       | #22C55E    | #4ADE80    |
 | color/status/warning       | #FBBF24    | #FCD34D    |
 | color/status/error         | #EF4444    | #F87171    |
@@ -77,11 +73,9 @@ color/accent/purple           (Daily Wins module only)
 ## Theme Rules
 
 * Every component must be designed in both Light and Dark mode.
-* Sidebar background adapts to theme: Light in light mode, Dark in dark mode.
-* Brand Blue (`#1976D2`) is consistent across both themes as the primary accent.
-* Daily Wins module uses Purple (`#6200EE`) as its accent color.
+* Sidebar background stays dark (`color/background/sidebar`) in both themes.
+* Brand Amber (`#F59E0B`) is consistent across both themes as the primary accent.
 * Shadows become more subtle in dark mode — use opacity-based shadows, not hardcoded colors.
-* System Default mode detects and follows the user's OS preference automatically.
 
 ---
 

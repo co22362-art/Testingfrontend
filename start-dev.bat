@@ -1,0 +1,6 @@
+@echo off
+echo Starting Project Assist Central UI and Backend Services...
+echo Bypassing Figma's config to use our invincible architecture...
+echo.
+cd ..
+npm run dev:central-ui
