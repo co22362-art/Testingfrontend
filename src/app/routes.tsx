@@ -12,6 +12,7 @@ const ProjectGroupPage = lazy(() => import('./modules/3011_project_groups/Projec
 const PeoplePage = lazy(() => import('./modules/3012_people/PeoplePage'));
 const TutorialsPage = lazy(() => import('./modules/3013_tutorials/TutorialsPage'));
 const SettingsPage = lazy(() => import('./modules/3014_settings/SettingsPage'));
+const FormBuilderPage = lazy(() => import('./modules/3016_form_builder/FormBuilderPage'));
 const LicensesPage = lazy(() => import('./modules/3021_licenses/LicensesPage'));
 
 const LoadingFallback = () => (
@@ -43,7 +44,7 @@ export const router = createBrowserRouter([
       { path: 'project-group', element: withSuspense(ProjectGroupPage) },
       { path: 'people', element: withSuspense(PeoplePage) },
       { path: 'tutorials', element: withSuspense(TutorialsPage) },
-      { path: 'forms', element: <PAAppLayout><div className="p-6 text-muted-foreground">Forms — coming soon</div></PAAppLayout> },
+      { path: 'forms', element: withSuspense(FormBuilderPage) },
       { path: 'licenses', element: withSuspense(LicensesPage) },
       { path: 'settings', element: withSuspense(SettingsPage) },
       { path: '*', element: <NotFoundPage /> },
